@@ -1,0 +1,37 @@
+<% layout('/layout/boilerplate') %>
+    <h1 class="text-center" style="color: white;">Edit Place</h1>
+    <h2 class="text-center" style="color: white;"><%= campgrounds.title %> </h2>
+    <div class="col-md-6 mx-auto">
+    <form action="/campgrounds/<%= campgrounds._id %>?_method=PUT " method="POST" class="needs-validation" novalidate>
+        <div>
+            <label class="form-label" for="title" style="color: white;">Title</label>
+            <input class="form-control" type="text" id="title" name="campground[title]" value="<%= campgrounds.title %> " required>
+            <div class="valid-feedback">
+                Looks good!
+              </div>
+              <div class="invalid-feedback">
+                Please enter a Name.
+              </div>
+        </div>
+        <div>
+            <label class="form-label" for="loc" style="color: white;">Location</label>
+            <input class="form-control" type="text" id="loc" name="campground[location]" value="<%= campgrounds.location %> " required>
+            <div class="valid-feedback">
+                Looks good!
+              </div>
+              <div class="invalid-feedback">
+                Please enter a Location.
+              </div>
+        </div>
+        <div>
+            <h6 class="text-muted" style="color: white;">You cannot edit Images for now</h6>
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label" style="color: white;">Description</label>
+            <textarea name="campground[description]" class="form-control" id="exampleFormControlTextarea1" rows="3"><%= campgrounds.description %></textarea>
+        </div>
+        <button class="btn btn-success my-3">Edit Campground</button>
+    </form>
+    </div>
+
+    <script src="/formValidation.js"></script>

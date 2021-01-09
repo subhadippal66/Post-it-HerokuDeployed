@@ -1,0 +1,151 @@
+<% layout('/layout/boilerplate') %>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css' rel='stylesheet' />
+
+<link rel="stylesheet" href="/stars.css">
+<div class="row">
+
+<div class="col-12 col-md-7">
+<div class="card mb-5" style="border-radius: 20px; background-color: #26273b;">
+  
+  <div class="card-body">
+    <% if(campgrounds.image.length !==0) {%> 
+    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel" >
+      <div class="carousel-inner" style="border-radius: 20px;">
+      <% campgrounds.image.forEach((img,i)=>{%> 
+        <div class="carousel-item <%= i===0 ? 'active' : '' %> ">
+          <img src="<%= img.thumbnail %> " class="d-block w-100" alt="...">
+        </div>
+      <% }) %> 
+      
+      </div>
+      <% if(campgrounds.image.length > 1) {%> 
+      <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </a>
+      <% } %> 
+    </div>
+    <% }else{ %>
+      <div class="carousel-inner" style="border-radius: 20px;">
+        <div class="carousel-item active">
+        <img src="/images/noimage.jpg"  class="d-block w-100" alt="" srcset=""> 
+      </div>
+    </div>
+      <% } %> 
+    <h1 class="card-title" style="color: white;"><%= campgrounds.title %></h1>
+    <h2 class="card-title" style="color: white;"><%= campgrounds.location %> </h2><br>
+    <p class="card-text" style="color: white;"><%= campgrounds.description %> </p>
+    
+    <span> 
+      <h5 style="color: white; ">Blog By-</h4>
+      <h5 style="color: tan;"><%= campgrounds.author.username %></h5> 
+      <h6 class="text-muted" style="color: tan;"><%= campgrounds.author.email %></h6>
+    </span>
+    <ol>
+    <% if(campgrounds.image.length>0) {%>
+      
+      <% for(let img of campgrounds.image) {%> 
+        <li style="color: white;"><a target="_blank" href="<%= img.path %> ">Download Full Resolution image</a></li>
+      <% }} %> 
+    </ol> 
+  </div> 
+  <% if(user && user._id.equals(campgrounds.author._id)) {%> 
+  <div class="card-body">
+    <a class="btn btn-info" href="/campgrounds/<%= campgrounds._id %>/edit ">Edit</a>
+    <form class="d-inline" action="/campgrounds/<%= campgrounds._id %>?_method=DELETE " method="post">
+      <button class="btn btn-outline-danger">Delete</button>
+    </form>
+  </div>
+<% } %> 
+
+</div>
+</div>
+
+
+<div class="col-md-5 col-12" >
+
+
+  <div id='map' class="mb-3" style='border-radius: 20px; height: 300px;'></div>
+
+
+<div class="card mb-3" style="border-radius: 20px; background-color: #26273b;">
+  <div class="card-body">
+    <h2 class="card-title" style="color: white;">Leave a review</h2>
+    <% if(user) {%> 
+    <form class="needs-validation" action="/campgrounds/<%= campgrounds._id %>/review" method="post" novalidate>
+          <h6 style="color: white;">Rating</h5>
+          <fieldset class="starability-checkmark">
+            <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked aria-label="No rating." />
+      
+            <input type="radio" id="rate1" name="rating" value="1" />
+            <label for="rate1"></label>
+      
+            <input type="radio" id="rate2" name="rating" value="2" />
+            <label for="rate2"></label>
+      
+            <input type="radio" id="rate3" name="rating" value="3" />
+            <label for="rate3"></label>
+      
+            <input type="radio" id="rate4" name="rating" value="4" />
+            <label for="rate4"></label>
+      
+            <input type="radio" id="rate5" name="rating" value="5" />
+            <label for="rate5"></label>
+      
+            <span class="starability-focus-ring"></span>
+          </fieldset>
+        
+        <div class="input-group ">
+            <span class="input-group-text">Details</span>
+            <textarea name="body" class="form-control" aria-label="With textarea" required></textarea>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+            <div class="invalid-feedback">
+              Please give some details.
+            </div>
+        </div>
+      <button class="btn btn-info my-3">Submit</button>
+    </form>
+    <% }else{ %>
+        <h6 style="color: wheat;">You must <a href="/login">Log-In</a> to submit a Review</h6>
+      <% } %> 
+
+    <% if(campgrounds.reviews.length>0){ %>
+      <h3 style="color: white;">All Reviews</h3>
+      <% } %> 
+
+    <% for(review of campgrounds.reviews){ %>
+      <div class="my-3" style="border:1px solid white; border-radius: 10px;">
+      <p class="starability-result" style="margin: .5rem" data-rating="<%= review.rating %>">
+        
+      </p>
+      <p class="mx-3 my-1" style="border-radius: 10px; color: white;"><%= review.body %></p>
+      <p class="mx-3 text-muted" style="color: wheat;">By - <%= review.author.username %> </p>
+      <% if(review.author.equals(user)) {%> 
+      <form action="/campgrounds/<%=campgrounds._id%>/review/<%=review._id%>?_method=DELETE" method="POST">
+          <button class="btn btn-outline-danger btn-sm mx-3 mb-3"> Delete</button>
+      </form>
+      <% } %> 
+    </div>
+      <% } %> 
+    
+  </div>
+</div>
+
+</div>
+
+</div>
+
+<script src="/formValidation.js"></script>
+<script>
+  const mapToken = '<%-process.env.MAPBOX_TOKEN %>';
+  const geo ='<%-JSON.stringify(campgrounds.geometry)%>';
+</script>
+<script src="/map.js"></script>

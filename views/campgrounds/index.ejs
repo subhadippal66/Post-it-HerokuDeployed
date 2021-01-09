@@ -1,0 +1,30 @@
+<% layout('/layout/boilerplate_index') %> 
+
+<%campgrounds.reverse();%> 
+
+<h1 class="text-center" style="color: white;">All Places</h1>
+    <% for(const camp of campgrounds){ %>
+        <div class="card my-3" style=" border-radius: 15px; background-color:#26273b;">
+            <div class="row">
+                <div class="col-md-4 ">
+                    <% if(camp.image.length) {%> 
+                        <img class="card-img" style="border-radius: 15px; max-height: 10rem; object-fit: cover;" src='<%= camp.image[0].thumbnail %> ' alt="">
+                    <% }else{ %> 
+                    <img class="card-img" style="border-radius: 15px; max-height: 10rem; object-fit: cover;" src='/images/noimage.jpg' alt="">
+                    <% } %> 
+                </div>
+                <div class="col-md-8">
+                    <h3 class="px-3 py-1" style="color: white;"><%= camp.title %> </h2>
+                    <h4 class="px-3 text-muted" style="color: white;"><%= camp.location %> </h3>
+                    
+                    <a class="btn btn-info mx-3 mb-3" href="/campgrounds/<%= camp._id %> ">Details</a>
+                </div>
+            </div>
+        </div>
+    <% } %>  
+
+<script>
+    const campground = {features:<%-JSON.stringify(campgrounds)%>};
+</script>
+
+<script src="/clusterMap.js"></script>
